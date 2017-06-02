@@ -56,17 +56,12 @@ CopyDep() {
     mime="$("$FILE" -bi "$1" | "$BUSYBOX" cut -d';' -f1)"
     if [ "$mime" == "application/x-executable" ] || [ "$mime" == "application/x-sharedlib" ];then
         for dep in $("$LDD" "$1" 2>&1 | "$BUSYBOX" cut -d' ' -f3);do
-            # dynamic is caputed on glibc, Not on musl
-            if [ -z "$dep" ] || [ "$dep" == "dynamic" ] || [ "$dep" == "Not" ];then
-                # empty line or static binary
-                continue
-            elif [ "$dep" == "not" ];then
-                # not found
-                Warn "A dependency is not found for: $1"
-                continue
-            fi
-
-            CopyReal "$dep"
+            case "$dep" in
+                    # "/*:" is captured from musl, "not" from glibc
+                    /*:|not) Warn "A dependency is not found for: $1" ;;
+                    # yay!
+                    /*) CopyReal "$dep" ;;
+            esac
         done
     fi
 }
