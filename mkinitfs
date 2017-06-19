@@ -93,9 +93,13 @@ echo "
 
   Options:
 
-     -k|--kernel=[VERSION|auto]   Kernel version to work with
+     -k|--kernel=[VERSION|auto]   Kernel version to work with (autodetected)
      -b|--busybox=[PATH]          Path to Busybox (autodetected)
      -n|--noclean                 Do not remove the temporary files
+
+  NOTE: by default the kernel version that the system is currently using is
+        going to be used for the image, if set to "auto" the most recent
+        kernel found will be used instead, usefull in chroot for an example.
 "
     exit 2
 }
