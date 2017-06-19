@@ -95,7 +95,6 @@ echo "
      -k|--kernel=[VERSION|auto]   Kernel version to work with
      -b|--busybox=[PATH]          Path to Busybox (autodetected)
      -n|--noclean                 Do not remove the temporary files
-     -h|--help                    Print this message
 "
     exit 2
 }
@@ -117,8 +116,7 @@ for arg in "$@";do
         -k=*|--kernel=*) KERNEL="${arg#*=}";;
         -b=*|--busybox=*) BUSYBOX="${arg#*=}";;
         -n|--noclean) NOCLEAN="yes" ;;
-        -h|--help) Usage ;;
-        -*) Warn "Unrecognized argument: $arg" ;;
+        *) Usage ;;
     esac
 done
 
