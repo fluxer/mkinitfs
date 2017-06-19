@@ -73,6 +73,7 @@ CopyOpt() {
 }
 
 TMPDIR=""
+NOCLEAN=""
 Cleanup() {
     if [ -n "$TMPDIR" ];then
         if [ -z "$NOCLEAN" ];then
@@ -109,8 +110,6 @@ fi
 
 KERNEL="$(uname -r)"
 BUSYBOX="$(type -p busybox)"
-NOCLEAN=""
-
 for arg in "$@";do
     case "$arg" in
         -k=*|--kernel=*) KERNEL="${arg#*=}";;
