@@ -112,14 +112,13 @@ KERNEL="$(uname -r)"
 BUSYBOX="$(type -p busybox)"
 NOCLEAN=""
 
-args_array=("$@")
-for arg in "${args_array[@]}";do
-    case "${arg}" in
+for arg in "$@";do
+    case "$arg" in
         -k=*|--kernel=*) KERNEL="${arg#*=}";;
         -b=*|--busybox=*) BUSYBOX="${arg#*=}";;
         -n|--noclean) NOCLEAN="yes" ;;
         -h|--help) Usage ;;
-        -*) Warn "Unrecognized argument: ${arg}" ;;
+        -*) Warn "Unrecognized argument: $arg" ;;
     esac
 done
 
