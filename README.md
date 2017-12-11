@@ -18,4 +18,4 @@
 * Only GNU libc and musl are currently supported
 * Prefer building the Busybox binary as static
 * e2fsprogs is optional but required for checking filesystems other than what Busybox supports (ext2 only)
-* The created image may be quire big, thus slow to boot, because it will contain all kernel modules
+* The created image size may be big, thus slow to boot, because it will contain all kernel modules
