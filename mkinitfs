@@ -193,7 +193,7 @@ for conf in $("$BUSYBOX" find /etc/mkinitfs/ -maxdepth 1 -name '*.conf');do
         if [ -z "$line" ];then
             continue
         fi
-        CopyDep "$(echo $line | sed "s|%MODULESDIR%|$MODULESDIR|g")"
+        CopyDep "$(echo $line | "$BUSYBOX" sed "s|%MODULESDIR%|$MODULESDIR|g")"
     done
 done
 
@@ -220,7 +220,6 @@ for modfile in $("$BUSYBOX" find "$MODULESDIR" -name 'modules.*');do
     "$BUSYBOX" cp -f "$modfile" "$TMPDIR/$MODULESDIR/"
 done
 "$BUSYBOX" depmod "$KERNEL" -b "$TMPDIR"
-
 
 # NOTE: limited use-case ldconfig is provided by Gentoo even when musl is in
 # use thus making this check insufficient
