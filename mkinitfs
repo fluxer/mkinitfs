@@ -200,10 +200,11 @@ done
 Msg "Copying kernel modules"
 "$BUSYBOX" mkdir -p "$TMPDIR/$MODULESDIR"
 for mod in $(echo $MODULES | "$BUSYBOX" sed 's|,| |g');do
-    if "$BUSYBOX" grep -q "/$mod.ko" "$MODULESDIR/modules.builtin";then
+    altmod="$(echo $mod | "$BUSYBOX" sed 's|_|-|g')"
+    if "$BUSYBOX" grep -q -E "/($mod|$altmod).ko" "$MODULESDIR/modules.builtin";then
         continue
     fi
-    modfiles="$("$BUSYBOX" grep "/$mod.ko" "$MODULESDIR/modules.dep" | "$BUSYBOX" sed 's|:||g')"
+    modfiles="$("$BUSYBOX" grep -E "/($mod|$altmod).ko" "$MODULESDIR/modules.dep" | "$BUSYBOX" sed 's|:||g')"
     if [ -z "$modfiles" ];then
         Error "Could not find module: $mod"
         continue
