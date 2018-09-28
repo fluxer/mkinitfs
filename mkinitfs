@@ -87,19 +87,24 @@ Cleanup() {
 
 Usage () {
 echo "
- mkinitfs v1.0.1 - initial RAM filesystem image creator
+ mkinitfs v1.0.2 - initial RAM filesystem image creator
 
   Usage: '# ${0##*/} <option> [<option>]..'
 
   Options:
 
      -k|--kernel=[VERSION|auto]   Kernel version to work with (autodetected)
+     -m|--modules=[LIST|auto]     Modules to add (autodetected)
      -b|--busybox=[PATH]          Path to Busybox (autodetected)
      -n|--noclean                 Do not remove the temporary files
 
   NOTE: by default the kernel version that the system is currently using is
         going to be used for the image, if set to "auto" the most recent
         kernel found will be used instead, usefull in chroot for an example.
+
+  NOTE2: a placeholder "%MODULESDIR%" can be used in configuration files which
+        are located in /etc/mkinitfs/ with .conf extension, they are list
+        of additional files to be copied before making the final image.
 "
     exit 2
 }
@@ -113,10 +118,12 @@ if [ -z "$FILE" ] || [ -z "$LDD" ];then
 fi
 
 KERNEL="$(uname -r)"
+MODULES="auto"
 BUSYBOX="$(type -p busybox)"
 for arg in "$@";do
     case "$arg" in
         -k=*|--kernel=*) KERNEL="${arg#*=}";;
+        -m=*|--modules=*) MODULES="${arg#*=}";;
         -b=*|--busybox=*) BUSYBOX="${arg#*=}";;
         -n|--noclean) NOCLEAN="yes" ;;
         *) Usage ;;
@@ -159,6 +166,15 @@ elif [ -z "$MODULESDIR" ];then
     Error "Kernel release is invalid: $KERNEL"
 fi
 
+if [ "$MODULES" == "auto" ];then
+    MODULES=""
+    for mdir in /sys/module/*;do
+        if [ -d "$mdir/sections" ];then
+            MODULES="$MODULES $($BUSYBOX basename $mdir)"
+        fi
+    done
+fi
+
 trap Cleanup EXIT
 TMPDIR="$(mktemp -d)"
 
@@ -177,14 +193,20 @@ for conf in $("$BUSYBOX" find /etc/mkinitfs/ -maxdepth 1 -name '*.conf');do
         if [ -z "$line" ];then
             contninue
         fi
-        CopyDep "$line"
+        CopyDep "$(echo $line | sed "s|%MODULESDIR%|$MODULESDIR|g")"
     done
 done
 
 Msg "Copying kernel modules"
 basedir="$("$BUSYBOX" dirname "$MODULESDIR")"
 "$BUSYBOX" mkdir -p "$TMPDIR/$basedir"
-"$BUSYBOX" cp -a "$MODULESDIR" "$TMPDIR/$basedir"
+for mod in $MODULES;do
+    for modfile in $("$BUSYBOX" grep "/$mod.*:" "$MODULESDIR/modules.dep" | sed 's|:||g');do
+        moddir=$("$BUSYBOX" dirname "$modfile")
+        mkdir -p "$TMPDIR/$basedir/$moddir"
+        "$BUSYBOX" cp -f "$MODULESDIR/$modfile" "$TMPDIR/$basedir/$moddir"
+    done
+done
 
 # NOTE: limited use-case ldconfig is provided by Gentoo even when musl is in
 # use thus making this check insufficient
