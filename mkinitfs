@@ -176,7 +176,7 @@ if [ "$MODULES" == "auto" ];then
 fi
 
 trap Cleanup EXIT
-TMPDIR="$(mktemp -d)"
+TMPDIR="$("$BUSYBOX" mktemp -d)"
 
 Msg "Copying root overlay"
 "$BUSYBOX" cp -a /etc/mkinitfs/root/* "$TMPDIR/"
