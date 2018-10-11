@@ -115,5 +115,5 @@ fi
 trap Cleanup EXIT
 TMPDIR="$(mktemp -d)"
 
-Msg "Creating image: $IMAGE"
+Msg "Listing image: $IMAGE"
 (cd "$TMPDIR" && "$BUSYBOX" gunzip -c "$IMAGE" | "$BUSYBOX" cpio -t -v)
