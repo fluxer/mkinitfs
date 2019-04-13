@@ -87,14 +87,14 @@ Cleanup() {
 
 Usage () {
 echo "
- mkinitfs v1.0.5 - initial RAM filesystem image creator
+ mkinitfs v1.0.6 - initial RAM filesystem image creator
 
   Usage: '# ${0##*/} <option> [<option>]..'
 
   Options:
 
      -k|--kernel=[VERSION|auto]   Kernel version to work with (autodetected)
-     -m|--modules=[LIST|auto]     Modules to add (autodetected)
+     -m|--modules=[LIST|base|auto]     Modules to add (autodetected)
      -b|--busybox=[PATH]          Path to Busybox (autodetected)
      -n|--noclean                 Do not remove the temporary files
      -h|--help                    Print usage
@@ -120,6 +120,7 @@ fi
 
 KERNEL="$(uname -r)"
 MODULES="auto"
+BASEMODULES="atkbd loop cdrom isofs usb-storage ehci-pci ehci-hcd ehci-platform ohci-pci ohci-hcd ohci-platform uhci-hcd xhci-hcd sd_mod sr_mod ata_piix ahci"
 BUSYBOX="$(type -p busybox)"
 for arg in "$@";do
     case "$arg" in
@@ -175,6 +176,8 @@ if [ "$MODULES" == "auto" ];then
             MODULES="$MODULES $($BUSYBOX basename $mdir)"
         fi
     done
+elif [ "$MODULES" == "base" ];then
+    MODULES="$BASEMODULES"
 fi
 
 trap Cleanup EXIT
