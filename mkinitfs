@@ -87,7 +87,7 @@ Cleanup() {
 
 Usage () {
 echo "
- mkinitfs v1.0.4 - initial RAM filesystem image creator
+ mkinitfs v1.0.5 - initial RAM filesystem image creator
 
   Usage: '# ${0##*/} <option> [<option>]..'
 
@@ -97,6 +97,7 @@ echo "
      -m|--modules=[LIST|auto]     Modules to add (autodetected)
      -b|--busybox=[PATH]          Path to Busybox (autodetected)
      -n|--noclean                 Do not remove the temporary files
+     -h|--help                    Print usage
 
   NOTE: by default the kernel version that the system is currently using is
         going to be used for the image, if set to "auto" the most recent
@@ -126,7 +127,8 @@ for arg in "$@";do
         -m=*|--modules=*) MODULES="${arg#*=}";;
         -b=*|--busybox=*) BUSYBOX="${arg#*=}";;
         -n|--noclean) NOCLEAN="yes" ;;
-        *) Error "Unknown argument: $arg"; Usage ;;
+        -h|--help) Usage ;;
+        *) Error "Unknown argument: $arg" ;;
     esac
 done
 
