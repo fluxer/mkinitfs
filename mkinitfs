@@ -87,7 +87,7 @@ Cleanup() {
 
 Usage () {
 echo "
- mkinitfs v1.0.6 - initial RAM filesystem image creator
+ mkinitfs v1.0.7 - initial RAM filesystem image creator
 
   Usage: '# ${0##*/} <option> [<option>]..'
 
@@ -170,12 +170,7 @@ elif [ -z "$MODULESDIR" ];then
 fi
 
 if [ "$MODULES" == "auto" ];then
-    MODULES=""
-    for mdir in /sys/module/*;do
-        if [ -d "$mdir/sections" ];then
-            MODULES="$MODULES $($BUSYBOX basename $mdir)"
-        fi
-    done
+    MODULES="$(awk -F' ' '{print $1}' /proc/modules)"
 elif [ "$MODULES" == "base" ];then
     MODULES="$BASEMODULES"
 fi

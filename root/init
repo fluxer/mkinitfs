@@ -85,7 +85,7 @@ esac
 
 msg "Setting up hotplugger..."
 if [ -e "/proc/sys/kernel/hotplug" ];then
-    cmd echo /bin/mdev > /proc/sys/kernel/hotplug
+    cmd echo "$(which mdev)" > /proc/sys/kernel/hotplug
 fi
 cmd touch /dev/mdev.log
 cmd mdev -s
