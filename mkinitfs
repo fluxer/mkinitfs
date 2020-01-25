@@ -48,19 +48,32 @@ CopyReal() {
     fi
 }
 
+CopyDepReal() {
+    # library path could be in either 1st or 3rd field
+    for field in 1 3;do
+        dep=$(echo "$@" | "$BUSYBOX" cut -d' ' -f"$field")
+        case "$dep" in
+            # yay!
+            /*) CopyReal "$dep" ;;
+        esac
+    done
+}
+
 FILE=""
 LDD=""
 CopyDep() {
     CopyReal "$1"
 
     mime="$("$FILE" -bi "$1" | "$BUSYBOX" cut -d';' -f1)"
-    if [ "$mime" == "application/x-executable" ] || [ "$mime" == "application/x-pie-executable" ] ||  [ "$mime" == "application/x-sharedlib" ];then
-        for dep in $("$LDD" "$1" 2>&1 | "$BUSYBOX" cut -d' ' -f3);do
-            case "$dep" in
-                    # "/*:" is captured from musl, "not" from glibc
-                    /*:|not) Warn "A dependency is not found for: $1" ;;
-                    # yay!
-                    /*) CopyReal "$dep" ;;
+    if [ "$mime" == "application/x-executable" ] || [ "$mime" == "application/x-pie-executable" ] \
+        || [ "$mime" == "application/x-sharedlib" ];then
+        "$LDD" "$1" 2>&1 | while read line;do
+            case "$line" in
+                # static library/executable
+                *"not dynamic"*) continue ;;
+                # "/*:" is captured from musl, "not" from glibc
+                */*:|*"not found"*) Warn "A dependency is not found for: $1" ;;
+                *) CopyDepReal "$line" ;;
             esac
         done
     fi
