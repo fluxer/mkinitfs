@@ -100,7 +100,7 @@ Cleanup() {
 
 Usage () {
 echo "
- mkinitfs v1.0.7 - initial RAM filesystem image creator
+ mkinitfs v1.0.8 - initial RAM filesystem image creator
 
   Usage: '# ${0##*/} <option> [<option>]..'
 
