@@ -46,7 +46,7 @@ Cleanup() {
 
 Usage () {
 echo "
- lsinitfs v1.0.4 - initial RAM filesystem image lister
+ lsinitfs v1.0.5 - initial RAM filesystem image lister
 
   Usage: '# ${0##*/} <option> [<option>]..'
 
@@ -118,4 +118,8 @@ trap Cleanup EXIT
 TMPDIR="$("$BUSYBOX" mktemp -d)"
 
 Msg "Listing image: $IMAGE"
-(cd "$TMPDIR" && "$BUSYBOX" gunzip -c "$IMAGE" | "$BUSYBOX" cpio -t -v)
+if [ -z "$NOCLEAN" ];then
+    (cd "$TMPDIR" && "$BUSYBOX" gunzip -c "$IMAGE" | "$BUSYBOX" cpio -t -v)
+else
+    (cd "$TMPDIR" && "$BUSYBOX" gunzip -c "$IMAGE" | "$BUSYBOX" cpio -i -v)
+fi
