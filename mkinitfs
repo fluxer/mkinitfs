@@ -100,7 +100,7 @@ Cleanup() {
 
 Usage () {
 echo "
- mkinitfs v1.0.9 - initial RAM filesystem image creator
+ mkinitfs v1.0.10 - initial RAM filesystem image creator
 
   Usage: '# ${0##*/} <option> [<option>]..'
 
@@ -224,7 +224,7 @@ for mod in ${MODULES//,/ };do
     for modfile in ${modfiles//:/};do
         moddir=$("$BUSYBOX" dirname "$modfile")
         "$BUSYBOX" mkdir -p "$TMPDIR/$MODULESDIR/$moddir"
-        "$BUSYBOX" cp -u "$MODULESDIR/$modfile" "$TMPDIR/$MODULESDIR/$moddir"
+        "$BUSYBOX" cp -u "$MODULESDIR/$modfile" "$TMPDIR/$MODULESDIR/$modfile"
     done
 done
 
