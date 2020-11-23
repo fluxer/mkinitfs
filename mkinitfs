@@ -156,6 +156,7 @@ fi
 
 #============================ Image creator ============================#
 
+WARNONMISSING=""
 MODULESDIR=""
 IMAGE="/boot/initramfs-$KERNEL.img"
 
@@ -184,6 +185,7 @@ fi
 
 if [ "$MODULES" == "auto" ];then
     MODULES="$(awk -F' ' '{print $1}' /proc/modules)"
+    WARNONMISSING="yes"
 elif [ "$MODULES" == "base" ];then
     MODULES="$BASEMODULES"
 fi
@@ -219,7 +221,11 @@ for mod in ${MODULES//,/ };do
         if "$BUSYBOX" grep -q -E "/($mod.ko|$altmod.ko)" "$MODULESDIR/modules.builtin";then
             continue
         fi
-        Error "Could not find module: $mod"
+        if [ -z "$WARNONMISSING" ];then
+            Error "Could not find module: $mod"
+        else
+            Warn "Could not find module: $mod"
+        fi
     fi
     for modfile in ${modfiles//:/};do
         moddir=$("$BUSYBOX" dirname "$modfile")
